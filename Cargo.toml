@@ -2,6 +2,9 @@
 resolver = "2"
 members = ["crates/*"]
 
+[workspace.metadata.crane]
+name = "record"
+
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
