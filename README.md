@@ -15,26 +15,22 @@ You're running a dev server in one terminal tab. You ask Claude Code to check if
 ## The Solution
 
 ```sh
-# In your terminal (Ghostty, iTerm, Terminal.app, etc.)
 record
-
-# Now Claude Code can:
-# - See everything printed to this terminal
-# - Type commands into this terminal
-# - Watch for errors in real-time
 ```
 
-That's it. Run `record` instead of opening a plain shell, and Claude Code gains visibility into that session.
+Your shell works exactly the same - you won't notice any difference. But now Claude Code can see and type into this terminal in the background.
 
 ## Example
 
 ```sh
-# Terminal 1: Run record, then start your server
-record
-npm run dev
+# Terminal 1
+record           # starts your normal shell, nothing changes
+npm run dev      # use it like normal
 
-# Terminal 2: Claude Code can now see "Server running on :3000"
-# and can run "curl localhost:3000" in Terminal 1
+# Meanwhile, Claude Code can:
+# - See "Server running on :3000"
+# - Run "curl localhost:3000" in this terminal
+# - Watch for errors
 ```
 
 ## Commands
