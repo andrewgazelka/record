@@ -1,9 +1,9 @@
 <p align="center">
-  <img src=".github/assets/header.svg" alt="rec" width="100%"/>
+  <img src=".github/assets/header.svg" alt="tap" width="100%"/>
 </p>
 
 <p align="center">
-  <code>nix run github:andrewgazelka/record</code>
+  <code>nix run github:andrewgazelka/tap</code>
 </p>
 
 Let Claude Code see and control your other terminal windows.
@@ -15,7 +15,7 @@ You're running a dev server in one terminal tab. You ask Claude Code to check if
 ## The Solution
 
 ```sh
-rec
+tap
 ```
 
 Your shell works exactly the same - you won't notice any difference. But now Claude Code can see and type into this terminal in the background.
@@ -24,7 +24,7 @@ Your shell works exactly the same - you won't notice any difference. But now Cla
 
 ```sh
 # Terminal 1
-rec              # starts your normal shell, nothing changes
+tap              # starts your normal shell, nothing changes
 npm run dev      # use it like normal
 
 # Meanwhile, Claude Code can:
@@ -36,21 +36,21 @@ npm run dev      # use it like normal
 ## Commands
 
 ```sh
-rec                  # start your normal shell
-rec start htop       # or any command
-rec list             # see active sessions
-rec scrollback       # read terminal output
-rec cursor           # get cursor position
-rec size             # get terminal size
-rec inject "ls"      # type into the terminal
-rec subscribe        # stream live output
+tap                  # start your normal shell
+tap start htop       # or any command
+tap list             # see active sessions
+tap scrollback       # read terminal output
+tap cursor           # get cursor position
+tap size             # get terminal size
+tap inject "ls"      # type into the terminal
+tap subscribe        # stream live output
 ```
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    subgraph rec
+    subgraph tap
         PTY[PTY Master]
         SB[Scrollback Buffer]
         Sock[Unix Socket]
@@ -60,7 +60,7 @@ flowchart LR
     PTY --> SB
     PTY --> Sock
 
-    Client[rec client] <-->|JSON| Sock
+    Client[tap client] <-->|JSON| Sock
     Claude[Claude Code] --> Client
 ```
 

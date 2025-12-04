@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/*"]
 
 [workspace.metadata.crane]
-name = "rec"
+name = "tap"
 
 [workspace.package]
 version = "0.1.0"
@@ -13,9 +13,9 @@ authors = ["Andrew Gazelka <andrew.gazelka@gmail.com>"]
 
 [workspace.dependencies]
 # Internal crates
-record-protocol = { path = "crates/record-protocol" }
-record-server = { path = "crates/record-server" }
-record-client = { path = "crates/record-client" }
+tap-protocol = { path = "crates/tap-protocol" }
+tap-server = { path = "crates/tap-server" }
+tap-client = { path = "crates/tap-client" }
 
 # External dependencies
 tokio = { version = "1", features = ["full"] }

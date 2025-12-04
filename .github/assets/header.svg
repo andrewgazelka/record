@@ -18,7 +18,7 @@
 
     <!-- Terminal content -->
     <text x="12" y="50" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#8b949e">$</text>
-    <text x="24" y="50" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#58a6ff">rec</text>
+    <text x="24" y="50" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#58a6ff">tap</text>
     <text x="12" y="68" font-family="SF Mono, Monaco, monospace" font-size="9" fill="#484f58">[session...]</text>
     <text x="12" y="86" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#c9d1d9">echo hi</text>
     <rect x="60" y="76" width="6" height="12" fill="#58a6ff" opacity="0.8">
@@ -36,7 +36,7 @@
   </g>
 
   <!-- Title -->
-  <text x="280" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#ffffff">rec</text>
+  <text x="280" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#ffffff">tap</text>
 
   <!-- Subtitle -->
   <text x="280" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#8b949e">Let AI see your terminal</text>

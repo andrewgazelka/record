@@ -1,10 +1,10 @@
 [package]
-name = "record-protocol"
+name = "tap-protocol"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-description = "Protocol types for record terminal sessions"
+description = "Protocol types for tap terminal sessions"
 
 [dependencies]
 serde.workspace = true

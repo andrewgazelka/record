@@ -24,7 +24,7 @@
 
       commonArgs = {
         inherit src;
-        pname = "rec";
+        pname = "tap";
         strictDeps = true;
 
         buildInputs = lib.optionals pkgs.stdenv.isDarwin [
@@ -34,13 +34,13 @@
 
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
 
-      rec-cli = craneLib.buildPackage (commonArgs
+      tap-cli = craneLib.buildPackage (commonArgs
         // {
           inherit cargoArtifacts;
         });
     in {
-      rec = rec-cli;
-      default = rec-cli;
+      tap = tap-cli;
+      default = tap-cli;
     });
 
     checks = forAllSystems (system: let
@@ -52,7 +52,7 @@
 
       commonArgs = {
         inherit src;
-        pname = "rec";
+        pname = "tap";
         strictDeps = true;
 
         buildInputs = lib.optionals pkgs.stdenv.isDarwin [
@@ -62,17 +62,17 @@
 
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
     in {
-      rec = self.packages.${system}.rec;
+      tap = self.packages.${system}.tap;
 
-      rec-clippy = craneLib.cargoClippy (commonArgs
+      tap-clippy = craneLib.cargoClippy (commonArgs
         // {
           inherit cargoArtifacts;
           cargoClippyExtraArgs = "--all-targets -- --deny warnings";
         });
 
-      rec-fmt = craneLib.cargoFmt {inherit src;};
+      tap-fmt = craneLib.cargoFmt {inherit src;};
 
-      rec-test = craneLib.cargoTest (commonArgs
+      tap-test = craneLib.cargoTest (commonArgs
         // {
           inherit cargoArtifacts;
         });

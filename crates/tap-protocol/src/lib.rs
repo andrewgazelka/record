@@ -1,4 +1,4 @@
-//! Shared protocol types for record terminal sessions.
+//! Shared protocol types for tap terminal sessions.
 
 use serde::{Deserialize, Serialize};
 
@@ -51,8 +51,8 @@ pub enum Response {
 #[must_use]
 pub fn socket_dir() -> std::path::PathBuf {
     dirs::runtime_dir()
-        .or_else(|| dirs::home_dir().map(|h| h.join(".record")))
-        .unwrap_or_else(|| std::path::PathBuf::from("/tmp/record"))
+        .or_else(|| dirs::home_dir().map(|h| h.join(".tap")))
+        .unwrap_or_else(|| std::path::PathBuf::from("/tmp/tap"))
 }
 
 /// Get socket path for a session ID.

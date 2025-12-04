@@ -1,12 +1,12 @@
-//! Unified CLI for record terminal sessions.
+//! Unified CLI for tap terminal sessions.
 
 use clap::{Parser, Subcommand};
-use record_client::{Client, list_sessions};
-use record_server::ServerConfig;
+use tap_client::{Client, list_sessions};
+use tap_server::ServerConfig;
 use tokio::io::AsyncWriteExt;
 
 #[derive(Parser)]
-#[command(name = "rec", about = "Terminal recording and introspection")]
+#[command(name = "tap", about = "Terminal introspection and control")]
 struct Args {
     #[command(subcommand)]
     command: Option<Command>,
@@ -71,7 +71,7 @@ async fn run_start(command: Vec<String>) -> eyre::Result<()> {
         command,
         session_id: None,
     };
-    let exit_code = record_server::run(config).await?;
+    let exit_code = tap_server::run(config).await?;
     std::process::exit(exit_code);
 }
 

@@ -1,19 +1,19 @@
 [package]
-name = "rec"
+name = "tap"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-description = "CLI for record terminal sessions"
+description = "CLI for tap terminal sessions"
 
 [[bin]]
-name = "rec"
+name = "tap"
 path = "src/main.rs"
 
 [dependencies]
-record-protocol.workspace = true
-record-server.workspace = true
-record-client.workspace = true
+tap-protocol.workspace = true
+tap-server.workspace = true
+tap-client.workspace = true
 tokio.workspace = true
 clap.workspace = true
 tracing.workspace = true

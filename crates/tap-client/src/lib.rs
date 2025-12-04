@@ -1,10 +1,10 @@
-//! Client library for interacting with record sessions.
+//! Client library for interacting with tap sessions.
 
 use thiserror::Error;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::UnixStream;
 
-pub use record_protocol::{Request, Response, Session, sessions_file, socket_dir, socket_path};
+pub use tap_protocol::{Request, Response, Session, sessions_file, socket_dir, socket_path};
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -22,7 +22,7 @@ pub enum Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// List all active record sessions.
+/// List all active tap sessions.
 pub fn list_sessions() -> Result<Vec<Session>> {
     let sessions_file = sessions_file();
     let content = std::fs::read_to_string(&sessions_file).unwrap_or_else(|_| "[]".to_string());
@@ -37,7 +37,7 @@ pub fn list_sessions() -> Result<Vec<Session>> {
     Ok(sessions)
 }
 
-/// Client for interacting with a record session.
+/// Client for interacting with a tap session.
 pub struct Client {
     stream: BufReader<UnixStream>,
 }

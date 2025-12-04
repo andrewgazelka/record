@@ -11,7 +11,7 @@ use nix::sys::signal::{self, SigHandler, Signal};
 use nix::sys::termios::{self, SetArg, Termios};
 use nix::unistd::{self, ForkResult, Pid};
 use parking_lot::RwLock;
-use record_protocol::{Request, Response};
+use tap_protocol::{Request, Response};
 use scrollback::ScrollbackBuffer;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
@@ -198,9 +198,9 @@ pub async fn run(config: ServerConfig) -> eyre::Result<i32> {
         .session_id
         .unwrap_or_else(|| human_id::gen_id(3));
 
-    let socket_dir = record_protocol::socket_dir();
+    let socket_dir = tap_protocol::socket_dir();
     std::fs::create_dir_all(&socket_dir)?;
-    let socket_path = record_protocol::socket_path(&session_id);
+    let socket_path = tap_protocol::socket_path(&session_id);
 
     let command = if config.command.is_empty() {
         vec![std::env::var("SHELL").unwrap_or_else(|_| "/bin/sh".to_string())]
@@ -209,7 +209,7 @@ pub async fn run(config: ServerConfig) -> eyre::Result<i32> {
     };
 
     // Write session info
-    let sessions_file = record_protocol::sessions_file();
+    let sessions_file = tap_protocol::sessions_file();
     let mut sessions: Vec<serde_json::Value> = std::fs::read_to_string(&sessions_file)
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok())
@@ -308,7 +308,7 @@ pub async fn run(config: ServerConfig) -> eyre::Result<i32> {
         }
     });
 
-    println!("\x1b[2m[rec: session {session_id}]\x1b[0m");
+    println!("\x1b[2m[tap: session {session_id}]\x1b[0m");
 
     // Main I/O loop
     let mut master_file =

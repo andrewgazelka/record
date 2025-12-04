@@ -1,28 +1,23 @@
 [package]
-name = "record-server"
+name = "tap-client"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-description = "PTY wrapper server library for terminal introspection"
+description = "Client library for interacting with tap sessions"
 
 [lib]
-name = "record_server"
+name = "tap_client"
 path = "src/lib.rs"
 
 [dependencies]
-record-protocol.workspace = true
+tap-protocol.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+thiserror.workspace = true
 tracing.workspace = true
-nix.workspace = true
 bytes.workspace = true
-human-id.workspace = true
-parking_lot.workspace = true
-chrono.workspace = true
-vt100.workspace = true
-eyre.workspace = true
 
 [dev-dependencies]
 tempfile = "3"

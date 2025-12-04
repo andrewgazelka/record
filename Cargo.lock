@@ -627,62 +627,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rec"
-version = "0.1.0"
-dependencies = [
- "clap",
- "color-eyre",
- "eyre",
- "record-client",
- "record-protocol",
- "record-server",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "record-client"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "record-protocol",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "record-protocol"
-version = "0.1.0"
-dependencies = [
- "dirs",
- "serde",
-]
-
-[[package]]
-name = "record-server"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "chrono",
- "eyre",
- "human-id",
- "nix",
- "parking_lot",
- "record-protocol",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tracing",
- "vt100",
-]
-
-[[package]]
 name = "redox_syscall"
 version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -854,6 +798,62 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "tap"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "color-eyre",
+ "eyre",
+ "tap-client",
+ "tap-protocol",
+ "tap-server",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "tap-client"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "serde",
+ "serde_json",
+ "tap-protocol",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "tap-protocol"
+version = "0.1.0"
+dependencies = [
+ "dirs",
+ "serde",
+]
+
+[[package]]
+name = "tap-server"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "chrono",
+ "eyre",
+ "human-id",
+ "nix",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "tap-protocol",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "vt100",
 ]
 
 [[package]]

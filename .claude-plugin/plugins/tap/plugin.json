@@ -1,0 +1,12 @@
+{
+  "name": "tap",
+  "version": "0.1.0",
+  "description": "See and control other terminal windows from Claude Code",
+  "author": {
+    "name": "Andrew Gazelka"
+  },
+  "homepage": "https://github.com/andrewgazelka/tap",
+  "repository": "https://github.com/andrewgazelka/tap",
+  "license": "MIT",
+  "keywords": ["terminal", "pty", "introspection", "control"]
+}
