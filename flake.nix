@@ -24,11 +24,11 @@
 
       commonArgs = {
         inherit src;
+        pname = "record";
         strictDeps = true;
 
         buildInputs = lib.optionals pkgs.stdenv.isDarwin [
           pkgs.libiconv
-          pkgs.darwin.apple_sdk.frameworks.Security
         ];
       };
 
@@ -52,11 +52,11 @@
 
       commonArgs = {
         inherit src;
+        pname = "record";
         strictDeps = true;
 
         buildInputs = lib.optionals pkgs.stdenv.isDarwin [
           pkgs.libiconv
-          pkgs.darwin.apple_sdk.frameworks.Security
         ];
       };
 
