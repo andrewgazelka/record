@@ -194,7 +194,7 @@ async fn run_server(
 }
 
 fn wait_for_child(child: Pid) -> i32 {
-    use nix::sys::wait::{waitpid, WaitStatus};
+    use nix::sys::wait::{WaitStatus, waitpid};
     loop {
         match waitpid(child, None) {
             Ok(WaitStatus::Exited(_, code)) => return code,
@@ -235,8 +235,11 @@ async fn main() -> ExitCode {
             args.command.clone()
         },
     }));
-    std::fs::write(&sessions_file, serde_json::to_string_pretty(&sessions).unwrap())
-        .expect("Failed to write sessions file");
+    std::fs::write(
+        &sessions_file,
+        serde_json::to_string_pretty(&sessions).unwrap(),
+    )
+    .expect("Failed to write sessions file");
 
     // Open PTY using openpty
     let ws = get_window_size();
@@ -327,9 +330,8 @@ async fn main() -> ExitCode {
     println!("\x1b[2m[record: session {session_id}]\x1b[0m");
 
     // Main I/O loop
-    let mut master_file = tokio::fs::File::from_std(unsafe {
-        std::fs::File::from_raw_fd(master.as_raw_fd())
-    });
+    let mut master_file =
+        tokio::fs::File::from_std(unsafe { std::fs::File::from_raw_fd(master.as_raw_fd()) });
     // Prevent double-close
     std::mem::forget(master);
 
@@ -401,7 +403,10 @@ async fn main() -> ExitCode {
     if let Ok(content) = std::fs::read_to_string(&sessions_file) {
         if let Ok(mut sessions) = serde_json::from_str::<Vec<serde_json::Value>>(&content) {
             sessions.retain(|s| s.get("id").and_then(|v| v.as_str()) != Some(&session_id));
-            let _ = std::fs::write(&sessions_file, serde_json::to_string_pretty(&sessions).unwrap());
+            let _ = std::fs::write(
+                &sessions_file,
+                serde_json::to_string_pretty(&sessions).unwrap(),
+            );
         }
     }
 

@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use record_client::{list_sessions, Client};
+use record_client::{Client, list_sessions};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]

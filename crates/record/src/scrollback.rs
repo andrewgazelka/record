@@ -15,7 +15,8 @@ impl ScrollbackBuffer {
     }
 
     fn ensure_parser(&mut self) -> &mut vt100::Parser {
-        self.parser.get_or_insert_with(|| vt100::Parser::new(24, 80, self.max_lines))
+        self.parser
+            .get_or_insert_with(|| vt100::Parser::new(24, 80, self.max_lines))
     }
 
     pub fn push(&mut self, data: &[u8]) {
@@ -46,7 +47,10 @@ impl ScrollbackBuffer {
         };
 
         let screen = parser.screen();
-        (screen.cursor_position().0 as usize, screen.cursor_position().1 as usize)
+        (
+            screen.cursor_position().0 as usize,
+            screen.cursor_position().1 as usize,
+        )
     }
 
     #[allow(dead_code)]
