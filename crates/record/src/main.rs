@@ -235,6 +235,8 @@ async fn main() -> ExitCode {
             args.command.clone()
         },
     }));
+    std::fs::write(&sessions_file, serde_json::to_string_pretty(&sessions).unwrap())
+        .expect("Failed to write sessions file");
 
     // Open PTY using openpty
     let ws = get_window_size();
@@ -390,9 +392,18 @@ async fn main() -> ExitCode {
         std::mem::forget(stdin_fd);
     }
 
-    // Clean up socket
+    // Clean up socket and session entry
     let socket_path = get_socket_path(&session_id);
     let _ = std::fs::remove_file(&socket_path);
+
+    // Remove session from sessions.json
+    let sessions_file = socket_dir.join("sessions.json");
+    if let Ok(content) = std::fs::read_to_string(&sessions_file) {
+        if let Ok(mut sessions) = serde_json::from_str::<Vec<serde_json::Value>>(&content) {
+            sessions.retain(|s| s.get("id").and_then(|v| v.as_str()) != Some(&session_id));
+            let _ = std::fs::write(&sessions_file, serde_json::to_string_pretty(&sessions).unwrap());
+        }
+    }
 
     // Wait for child
     let final_code = wait_for_child(child_pid);
