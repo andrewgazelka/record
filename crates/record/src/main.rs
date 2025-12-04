@@ -400,14 +400,14 @@ async fn main() -> ExitCode {
 
     // Remove session from sessions.json
     let sessions_file = socket_dir.join("sessions.json");
-    if let Ok(content) = std::fs::read_to_string(&sessions_file) {
-        if let Ok(mut sessions) = serde_json::from_str::<Vec<serde_json::Value>>(&content) {
-            sessions.retain(|s| s.get("id").and_then(|v| v.as_str()) != Some(&session_id));
-            let _ = std::fs::write(
-                &sessions_file,
-                serde_json::to_string_pretty(&sessions).unwrap(),
-            );
-        }
+    if let Ok(content) = std::fs::read_to_string(&sessions_file)
+        && let Ok(mut sessions) = serde_json::from_str::<Vec<serde_json::Value>>(&content)
+    {
+        sessions.retain(|s| s.get("id").and_then(|v| v.as_str()) != Some(&session_id));
+        let _ = std::fs::write(
+            &sessions_file,
+            serde_json::to_string_pretty(&sessions).unwrap(),
+        );
     }
 
     // Wait for child
