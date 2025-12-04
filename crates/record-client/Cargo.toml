@@ -4,28 +4,20 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-description = "Client library and CLI for interacting with record sessions"
-
-[[bin]]
-name = "record-client"
-path = "src/main.rs"
+description = "Client library for interacting with record sessions"
 
 [lib]
 name = "record_client"
 path = "src/lib.rs"
 
 [dependencies]
+record-protocol.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
-dirs.workspace = true
-clap.workspace = true
 bytes.workspace = true
-
-anyhow.workspace = true
 
 [dev-dependencies]
 tempfile = "3"

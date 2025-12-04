@@ -14,6 +14,8 @@ authors = ["Andrew Gazelka <andrew.gazelka@gmail.com>"]
 [workspace.dependencies]
 # Internal crates
 record-protocol = { path = "crates/record-protocol" }
+record-server = { path = "crates/record-server" }
+record-client = { path = "crates/record-client" }
 
 # External dependencies
 tokio = { version = "1", features = ["full"] }
@@ -29,5 +31,6 @@ clap = { version = "4", features = ["derive"] }
 uuid = { version = "1", features = ["v4"] }
 parking_lot = "0.12"
 chrono = { version = "0.4", features = ["serde"] }
-anyhow = "1"
 vt100 = "0.15"
+eyre = "0.6"
+color-eyre = "0.6"

@@ -1,30 +1,28 @@
 [package]
-name = "record"
+name = "record-server"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-description = "PTY wrapper with Unix socket API for terminal introspection"
+description = "PTY wrapper server library for terminal introspection"
 
-[[bin]]
-name = "record"
-path = "src/main.rs"
+[lib]
+name = "record_server"
+path = "src/lib.rs"
 
 [dependencies]
+record-protocol.workspace = true
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
-tracing-subscriber.workspace = true
 nix.workspace = true
 bytes.workspace = true
-dirs.workspace = true
-clap.workspace = true
 uuid.workspace = true
 parking_lot.workspace = true
 chrono.workspace = true
 vt100.workspace = true
+eyre.workspace = true
 
 [dev-dependencies]
 tempfile = "3"

@@ -1,48 +1,33 @@
-use std::env;
+//! PTY wrapper server library for terminal introspection.
+
+mod scrollback;
+
 use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 use std::os::unix::net::UnixListener as StdUnixListener;
-use std::path::PathBuf;
-use std::process::ExitCode;
 
-use bytes::BytesMut;
-use clap::Parser;
 use nix::libc;
 use nix::pty::{self, OpenptyResult, Winsize};
 use nix::sys::signal::{self, SigHandler, Signal};
 use nix::sys::termios::{self, SetArg, Termios};
 use nix::unistd::{self, ForkResult, Pid};
 use parking_lot::RwLock;
+use record_protocol::{Request, Response};
+use scrollback::ScrollbackBuffer;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
 use tokio::sync::broadcast;
 use tracing::{debug, error, info, warn};
 
-mod protocol;
-mod scrollback;
-
-use protocol::{Request, Response};
-use scrollback::ScrollbackBuffer;
-
-/// PTY wrapper with Unix socket API for terminal introspection
-#[derive(Parser)]
-#[command(name = "record", about = "PTY wrapper with live API")]
-struct Args {
-    /// Command to run (defaults to $SHELL)
-    #[arg(trailing_var_arg = true)]
-    command: Vec<String>,
-}
-
 static SCROLLBACK: RwLock<ScrollbackBuffer> = RwLock::new(ScrollbackBuffer::new());
 static MASTER_FD: std::sync::OnceLock<i32> = std::sync::OnceLock::new();
 
-fn get_socket_dir() -> PathBuf {
-    dirs::runtime_dir()
-        .or_else(|| dirs::home_dir().map(|h| h.join(".record")))
-        .unwrap_or_else(|| PathBuf::from("/tmp/record"))
-}
-
-fn get_socket_path(session_id: &str) -> PathBuf {
-    get_socket_dir().join(format!("{session_id}.sock"))
+/// Configuration for starting a server session.
+#[derive(Debug, Clone, Default)]
+pub struct ServerConfig {
+    /// Command to run (defaults to $SHELL if empty).
+    pub command: Vec<String>,
+    /// Custom session ID (auto-generated UUID if None).
+    pub session_id: Option<String>,
 }
 
 fn setup_terminal(fd: &OwnedFd) -> nix::Result<Termios> {
@@ -79,7 +64,7 @@ extern "C" fn handle_sigwinch(_: libc::c_int) {
 }
 
 async fn handle_client(mut stream: UnixStream, output_rx: broadcast::Receiver<Vec<u8>>) {
-    let mut buf = BytesMut::with_capacity(4096);
+    let mut buf = bytes::BytesMut::with_capacity(4096);
     let mut output_rx = output_rx;
 
     loop {
@@ -168,8 +153,8 @@ async fn handle_client(mut stream: UnixStream, output_rx: broadcast::Receiver<Ve
     }
 }
 
-async fn run_server(
-    socket_path: PathBuf,
+async fn run_socket_server(
+    socket_path: std::path::PathBuf,
     output_tx: broadcast::Sender<Vec<u8>>,
 ) -> std::io::Result<()> {
     let _ = std::fs::remove_file(&socket_path);
@@ -206,21 +191,25 @@ fn wait_for_child(child: Pid) -> i32 {
     }
 }
 
-#[tokio::main]
-async fn main() -> ExitCode {
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
+/// Run the PTY server with the given configuration.
+/// Returns the exit code of the child process.
+pub async fn run(config: ServerConfig) -> eyre::Result<i32> {
+    let session_id = config
+        .session_id
+        .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
 
-    let args = Args::parse();
+    let socket_dir = record_protocol::socket_dir();
+    std::fs::create_dir_all(&socket_dir)?;
+    let socket_path = record_protocol::socket_path(&session_id);
 
-    let session_id = uuid::Uuid::new_v4().to_string();
-    let socket_dir = get_socket_dir();
-    std::fs::create_dir_all(&socket_dir).expect("Failed to create socket directory");
-    let socket_path = get_socket_path(&session_id);
+    let command = if config.command.is_empty() {
+        vec![std::env::var("SHELL").unwrap_or_else(|_| "/bin/sh".to_string())]
+    } else {
+        config.command.clone()
+    };
 
     // Write session info
-    let sessions_file = socket_dir.join("sessions.json");
+    let sessions_file = record_protocol::sessions_file();
     let mut sessions: Vec<serde_json::Value> = std::fs::read_to_string(&sessions_file)
         .ok()
         .and_then(|s| serde_json::from_str(&s).ok())
@@ -229,31 +218,29 @@ async fn main() -> ExitCode {
         "id": session_id,
         "pid": std::process::id(),
         "started": chrono::Utc::now().to_rfc3339(),
-        "command": if args.command.is_empty() {
-            vec![env::var("SHELL").unwrap_or_else(|_| "/bin/sh".to_string())]
-        } else {
-            args.command.clone()
-        },
+        "command": command,
     }));
     std::fs::write(
         &sessions_file,
         serde_json::to_string_pretty(&sessions).unwrap(),
-    )
-    .expect("Failed to write sessions file");
+    )?;
 
     // Open PTY using openpty
     let ws = get_window_size();
-    let OpenptyResult { master, slave } = pty::openpty(Some(&ws), None).expect("openpty failed");
+    let OpenptyResult { master, slave } =
+        pty::openpty(Some(&ws), None).map_err(|e| eyre::eyre!("openpty failed: {e}"))?;
 
     let master_raw_fd = master.as_raw_fd();
 
     // Store master FD for signal handler
-    MASTER_FD.set(master_raw_fd).unwrap();
+    MASTER_FD
+        .set(master_raw_fd)
+        .map_err(|_| eyre::eyre!("Failed to set MASTER_FD"))?;
 
     // Set up SIGWINCH handler
     unsafe {
         signal::signal(Signal::SIGWINCH, SigHandler::Handler(handle_sigwinch))
-            .expect("Failed to set SIGWINCH handler");
+            .map_err(|e| eyre::eyre!("Failed to set SIGWINCH handler: {e}"))?;
     }
 
     // Fork child process
@@ -280,13 +267,7 @@ async fn main() -> ExitCode {
                 drop(slave);
             }
 
-            let cmd = if args.command.is_empty() {
-                vec![env::var("SHELL").unwrap_or_else(|_| "/bin/sh".to_string())]
-            } else {
-                args.command.clone()
-            };
-
-            let c_cmd: Vec<std::ffi::CString> = cmd
+            let c_cmd: Vec<std::ffi::CString> = command
                 .iter()
                 .map(|s| std::ffi::CString::new(s.as_str()).unwrap())
                 .collect();
@@ -296,8 +277,7 @@ async fn main() -> ExitCode {
         }
         Ok(ForkResult::Parent { child }) => child,
         Err(e) => {
-            eprintln!("Fork failed: {e}");
-            return ExitCode::FAILURE;
+            return Err(eyre::eyre!("Fork failed: {e}"));
         }
     };
 
@@ -321,13 +301,14 @@ async fn main() -> ExitCode {
 
     // Start server
     let server_output_tx = output_tx.clone();
+    let server_socket_path = socket_path.clone();
     tokio::spawn(async move {
-        if let Err(e) = run_server(socket_path.clone(), server_output_tx).await {
+        if let Err(e) = run_socket_server(server_socket_path, server_output_tx).await {
             error!("Server error: {e}");
         }
     });
 
-    println!("\x1b[2m[record: session {session_id}]\x1b[0m");
+    println!("\x1b[2m[rec: session {session_id}]\x1b[0m");
 
     // Main I/O loop
     let mut master_file =
@@ -395,11 +376,9 @@ async fn main() -> ExitCode {
     }
 
     // Clean up socket and session entry
-    let socket_path = get_socket_path(&session_id);
     let _ = std::fs::remove_file(&socket_path);
 
     // Remove session from sessions.json
-    let sessions_file = socket_dir.join("sessions.json");
     if let Ok(content) = std::fs::read_to_string(&sessions_file)
         && let Ok(mut sessions) = serde_json::from_str::<Vec<serde_json::Value>>(&content)
     {
@@ -414,8 +393,8 @@ async fn main() -> ExitCode {
     let final_code = wait_for_child(child_pid);
 
     if final_code == 0 && exit_code == 0 {
-        ExitCode::SUCCESS
+        Ok(0)
     } else {
-        ExitCode::from(final_code as u8)
+        Ok(final_code)
     }
 }
