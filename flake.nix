@@ -38,9 +38,19 @@
         // {
           inherit cargoArtifacts;
         });
+      # Docker image - must be built on Linux (e.g., in CI)
+      dockerImage = pkgs.dockerTools.streamLayeredImage {
+        name = "tap";
+        tag = "latest";
+        contents = [tap-cli];
+        config = {
+          Entrypoint = ["${tap-cli}/bin/tap"];
+        };
+      };
     in {
       tap = tap-cli;
       default = tap-cli;
+      docker = dockerImage;
     });
 
     checks = forAllSystems (system: let
