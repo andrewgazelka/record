@@ -1,43 +1,64 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1117"/>
-      <stop offset="100%" style="stop-color:#161b22"/>
-    </linearGradient>
-  </defs>
+  <style>
+    .title { fill: #1f2328; }
+    .subtitle { fill: #656d76; }
+    .terminal-bg { fill: #f6f8fa; }
+    .terminal-header { fill: #e1e4e8; }
+    .terminal-border { stroke: #d0d7de; }
+    .terminal-text { fill: #57606a; }
+    .terminal-cmd { fill: #0550ae; }
+    .terminal-content { fill: #1f2328; }
+    .cursor { fill: #0550ae; }
+    .dot-line { stroke: #d0d7de; }
+    .dot { fill: #0550ae; }
+    .dot-ring { stroke: #0550ae; }
 
-  <rect width="800" height="200" fill="url(#bg)"/>
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #ffffff; }
+      .subtitle { fill: #8b949e; }
+      .terminal-bg { fill: #161b22; }
+      .terminal-header { fill: #21262d; }
+      .terminal-border { stroke: #30363d; }
+      .terminal-text { fill: #8b949e; }
+      .terminal-cmd { fill: #58a6ff; }
+      .terminal-content { fill: #c9d1d9; }
+      .cursor { fill: #58a6ff; }
+      .dot-line { stroke: #30363d; }
+      .dot { fill: #58a6ff; }
+      .dot-ring { stroke: #58a6ff; }
+    }
+  </style>
 
   <!-- Terminal icon -->
   <g transform="translate(50, 50)">
-    <rect width="160" height="100" fill="#161b22" rx="8" stroke="#30363d" stroke-width="1"/>
-    <rect width="160" height="24" fill="#21262d" rx="8 8 0 0"/>
+    <rect class="terminal-bg terminal-border" width="160" height="100" rx="8" stroke-width="1"/>
+    <rect class="terminal-header" width="160" height="24" rx="8 8 0 0"/>
     <circle cx="16" cy="12" r="5" fill="#ff5f56"/>
     <circle cx="32" cy="12" r="5" fill="#ffbd2e"/>
     <circle cx="48" cy="12" r="5" fill="#27c93f"/>
 
     <!-- Terminal content -->
-    <text x="12" y="50" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#8b949e">$</text>
-    <text x="24" y="50" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#58a6ff">tap</text>
-    <text x="12" y="68" font-family="SF Mono, Monaco, monospace" font-size="9" fill="#484f58">[session...]</text>
-    <text x="12" y="86" font-family="SF Mono, Monaco, monospace" font-size="11" fill="#c9d1d9">echo hi</text>
-    <rect x="60" y="76" width="6" height="12" fill="#58a6ff" opacity="0.8">
+    <text class="terminal-text" x="12" y="50" font-family="SF Mono, Monaco, monospace" font-size="11">$</text>
+    <text class="terminal-cmd" x="24" y="50" font-family="SF Mono, Monaco, monospace" font-size="11">tap</text>
+    <text class="terminal-text" x="12" y="68" font-family="SF Mono, Monaco, monospace" font-size="9">[session...]</text>
+    <text class="terminal-content" x="12" y="86" font-family="SF Mono, Monaco, monospace" font-size="11">echo hi</text>
+    <rect class="cursor" x="60" y="76" width="6" height="12" opacity="0.8">
       <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
     </rect>
   </g>
 
   <!-- Side channel indicator -->
   <g transform="translate(180, 100)">
-    <line x1="0" y1="0" x2="40" y2="0" stroke="#30363d" stroke-width="2" stroke-dasharray="4 2"/>
-    <circle cx="55" cy="0" r="12" fill="none" stroke="#58a6ff" stroke-width="2">
+    <line class="dot-line" x1="0" y1="0" x2="40" y2="0" stroke-width="2" stroke-dasharray="4 2"/>
+    <circle class="dot-ring" cx="55" cy="0" r="12" fill="none" stroke-width="2">
       <animate attributeName="stroke-opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="55" cy="0" r="4" fill="#58a6ff"/>
+    <circle class="dot" cx="55" cy="0" r="4"/>
   </g>
 
   <!-- Title -->
-  <text x="280" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#ffffff">tap</text>
+  <text class="title" x="280" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700">tap</text>
 
   <!-- Subtitle -->
-  <text x="280" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#8b949e">Let AI see your terminal</text>
+  <text class="subtitle" x="280" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="18">Let AI see your terminal</text>
 </svg>
