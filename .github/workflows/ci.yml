@@ -33,6 +33,23 @@ jobs:
       - name: Build package
         run: nix build --print-build-logs
 
+  publish:
+    name: Publish to FlakeHub
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [check, build]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - uses: DeterminateSystems/flakehub-push@main
+        with:
+          name: andrewgazelka/tap
+          rolling: true
+          visibility: public
+          include-output-paths: true
+
   ci-passed:
     name: CI Passed
     runs-on: ubuntu-latest
