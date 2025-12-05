@@ -156,7 +156,7 @@ mod tests {
             _ => panic!("Expected NeedMore"),
         }
         // Then 'e' arrives
-        match proc.process(&[b'e']) {
+        match proc.process(b"e") {
             InputResult::Action(KeybindAction::OpenEditor) => {}
             _ => panic!("Expected OpenEditor action"),
         }
@@ -178,7 +178,7 @@ mod tests {
         let mut proc = default_processor();
         proc.process(&[0x1b]);
         // Non-matching key
-        match proc.process(&[b'x']) {
+        match proc.process(b"x") {
             InputResult::Passthrough(bytes) => assert_eq!(bytes, vec![0x1b, b'x']),
             _ => panic!("Expected passthrough"),
         }

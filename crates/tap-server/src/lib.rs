@@ -417,12 +417,12 @@ pub async fn run(config: ServerConfig) -> eyre::Result<i32> {
                 }
             }
             _ = tokio::time::sleep(input_processor.escape_timeout()), if input_processor.has_pending_escape() => {
-                if let input::InputResult::Passthrough(bytes) = input_processor.timeout_escape() {
-                    if !bytes.is_empty() {
-                        let fd = unsafe { OwnedFd::from_raw_fd(master_raw_fd) };
-                        let _ = unistd::write(&fd, &bytes);
-                        std::mem::forget(fd);
-                    }
+                if let input::InputResult::Passthrough(bytes) = input_processor.timeout_escape()
+                    && !bytes.is_empty()
+                {
+                    let fd = unsafe { OwnedFd::from_raw_fd(master_raw_fd) };
+                    let _ = unistd::write(&fd, &bytes);
+                    std::mem::forget(fd);
                 }
             }
         }

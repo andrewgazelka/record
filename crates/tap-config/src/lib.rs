@@ -1,7 +1,7 @@
 //! Configuration for tap terminal sessions.
 
 /// Main configuration structure.
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct Config {
     /// Editor to use for the edit command.
@@ -28,16 +28,6 @@ pub struct KeybindConfig {
 pub struct TimingConfig {
     /// Timeout in milliseconds to distinguish ESC from Alt-key sequences.
     pub escape_timeout_ms: u64,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            editor: None,
-            keybinds: KeybindConfig::default(),
-            timing: TimingConfig::default(),
-        }
-    }
 }
 
 impl Default for KeybindConfig {
